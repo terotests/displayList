@@ -11459,6 +11459,13 @@
       };
 
       /**
+       * @param float n
+       */
+      _myTrait_.get = function (n) {
+        return this._model.get(n);
+      };
+
+      /**
        * @param float t
        */
       _myTrait_.h = function (t) {
@@ -11489,7 +11496,7 @@
       _myTrait_.parent = function (t) {
         var p = this._model.parent();
         if (p) {
-          return _objectCache[p.getID()];
+          return this._find(p.getID());
         }
       };
 
@@ -11546,6 +11553,18 @@
           return this;
         }
         return this._model.get("scaleFactor");
+      };
+
+      /**
+       * @param float n
+       * @param float v
+       */
+      _myTrait_.set = function (n, v) {
+        if (typeof v != "undefined") {
+          this._model.set(n, v);
+          return this;
+        }
+        return this._model.get(n);
       };
 
       /**
@@ -11934,7 +11953,9 @@
        */
       _myTrait_._find = function (id) {
         if (!_objectCache) _objectCache = {};
-        return _objectCache[id];
+        var co = _objectCache[id];
+        if (co) return co;
+        return displayItem(_data(id));
       };
 
       /**
@@ -13425,7 +13446,10 @@
 
         if (!this._movementLock) this._movementLock = {};
 
-        if (!_activeItems) _activeItems = [];
+        if (!_activeItems) {
+          _activeItems = [];
+          _objectCache = {};
+        }
 
         var me = this,
             o = this;
@@ -13514,14 +13538,18 @@
               minDeltaMs = 1;
 
           var iVal = 1 / 60;
-          if (ieversion() > 0) iVal = 1 / 10;
-
-          minDeltaMs = 1;
-          // This is the rendering loop...
-          later().every(iVal, function () {
-            // TODO: enable the rendering loop here
-            me._onFrame();
-          });
+          if (ieversion() > 0) {
+            iVal = 1 / 10;
+            minDeltaMs = 1;
+            // This is the rendering loop...
+            later().every(iVal, function () {
+              me._onFrame();
+            });
+          } else {
+            later().onFrame(function () {
+              me._onFrame();
+            });
+          }
           _initDone = true;
         }
 
