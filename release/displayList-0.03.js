@@ -4171,6 +4171,17 @@
   };
   surfaceDomCanvas.prototype = new surfaceDomCanvas_prototype();
 
+  (function () {
+    if (typeof define !== "undefined" && define !== null && define.amd != null) {
+      __amdDefs__["surfaceDomCanvas"] = surfaceDomCanvas;
+      this.surfaceDomCanvas = surfaceDomCanvas;
+    } else if (typeof module !== "undefined" && module !== null && module.exports != null) {
+      module.exports["surfaceDomCanvas"] = surfaceDomCanvas;
+    } else {
+      this.surfaceDomCanvas = surfaceDomCanvas;
+    }
+  }).call(new Function("return this")());
+
   // the subclass definition comes around here then
 
   // The class definition is here...

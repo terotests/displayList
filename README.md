@@ -1182,6 +1182,7 @@
 - [fitToPage](README.md#properties_fitToPage)
 - [fontFamily](README.md#properties_fontFamily)
 - [fontSize](README.md#properties_fontSize)
+- [get](README.md#properties_get)
 - [h](README.md#properties_h)
 - [hasOwn](README.md#properties_hasOwn)
 - [model](README.md#properties_model)
@@ -1191,6 +1192,7 @@
 - [ri](README.md#properties_ri)
 - [rj](README.md#properties_rj)
 - [scaleFactor](README.md#properties_scaleFactor)
+- [set](README.md#properties_set)
 - [shadowBlur](README.md#properties_shadowBlur)
 - [shadowColor](README.md#properties_shadowColor)
 - [svgPath](README.md#properties_svgPath)
@@ -11640,7 +11642,9 @@ if(_objectCache && model && model.getID) {
 
 ```javascript
 if(!_objectCache) _objectCache = {};
-return _objectCache[id];
+var co =  _objectCache[id];
+if(co) return co;
+return displayItem( _data( id ) );
 ```
 
 ### <a name="displayItem__getTransfromFromModel"></a>displayItem::_getTransfromFromModel(me, model)
@@ -13186,8 +13190,10 @@ if(model._model) model = model._model;
 if(!this._movementLock)
     this._movementLock = {};   
     
-if(!_activeItems)
+if(!_activeItems) {
    _activeItems = [];
+   _objectCache = {};
+}
   
 var me = this,
     o = this;
@@ -13278,14 +13284,18 @@ if(!_initDone) {
     var lastOnMs, minDeltaMs = 1;
     
     var iVal = 1/60;
-    if(ieversion()>0) iVal = 1/10;
-    
-    minDeltaMs = 1;
-    // This is the rendering loop...
-    later().every( iVal, function() {   
-        // TODO: enable the rendering loop here
-        me._onFrame();
-    });
+    if(ieversion()>0) {
+        iVal = 1/10;
+        minDeltaMs = 1;
+        // This is the rendering loop...
+        later().every( iVal, function() {   
+            me._onFrame();
+        });
+    } else {
+        later().onFrame( function() {   
+            me._onFrame();
+        });        
+    }
     _initDone = true;
 }
 
@@ -14835,6 +14845,13 @@ if(typeof(t) != "undefined") {
 return this._model.get("fontSize");
 ```
 
+### <a name="properties_get"></a>properties::get(n)
+
+
+```javascript
+return this._model.get(n);
+```
+
 ### <a name="properties_h"></a>properties::h(t)
 
 
@@ -14866,7 +14883,7 @@ return this._model;
 ```javascript
 var p = this._model.parent();
 if(p) {
-    return _objectCache[p.getID()];
+    return this._find( p.getID() );
 }
 
 ```
@@ -14925,6 +14942,17 @@ if(typeof(t) != "undefined") {
     return this;
 }
 return this._model.get("scaleFactor");
+```
+
+### <a name="properties_set"></a>properties::set(n, v)
+
+
+```javascript
+if(typeof(v) != "undefined") {
+    this._model.set(n, v);
+    return this;
+}
+return this._model.get(n);
 ```
 
 ### <a name="properties_shadowBlur"></a>properties::shadowBlur(t)
