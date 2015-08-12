@@ -1,8 +1,9 @@
 # displayList
 
-A demo
+Couple simple demos
 
-http://jsfiddle.net/564hexyx/
+* http://jsfiddle.net/564hexyx/
+* http://jsfiddle.net/scca1dmh/
 
 
 
