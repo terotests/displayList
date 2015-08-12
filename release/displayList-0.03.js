@@ -2902,6 +2902,17 @@
   };
   surface.prototype = new surface_prototype();
 
+  (function () {
+    if (typeof define !== "undefined" && define !== null && define.amd != null) {
+      __amdDefs__["surface"] = surface;
+      this.surface = surface;
+    } else if (typeof module !== "undefined" && module !== null && module.exports != null) {
+      module.exports["surface"] = surface;
+    } else {
+      this.surface = surface;
+    }
+  }).call(new Function("return this")());
+
   // the subclass definition comes around here then
 
   // The class definition is here...
@@ -3943,6 +3954,17 @@
     name: "display"
   };
   display.prototype = new display_prototype();
+
+  (function () {
+    if (typeof define !== "undefined" && define !== null && define.amd != null) {
+      __amdDefs__["display"] = display;
+      this.display = display;
+    } else if (typeof module !== "undefined" && module !== null && module.exports != null) {
+      module.exports["display"] = display;
+    } else {
+      this.display = display;
+    }
+  }).call(new Function("return this")());
 
   // the subclass definition comes around here then
 
