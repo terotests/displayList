@@ -6056,6 +6056,17 @@
   };
   surfaceDomSVGLayer.prototype = new surfaceDomSVGLayer_prototype();
 
+  (function () {
+    if (typeof define !== "undefined" && define !== null && define.amd != null) {
+      __amdDefs__["surfaceDomSVGLayer"] = surfaceDomSVGLayer;
+      this.surfaceDomSVGLayer = surfaceDomSVGLayer;
+    } else if (typeof module !== "undefined" && module !== null && module.exports != null) {
+      module.exports["surfaceDomSVGLayer"] = surfaceDomSVGLayer;
+    } else {
+      this.surfaceDomSVGLayer = surfaceDomSVGLayer;
+    }
+  }).call(new Function("return this")());
+
   // the subclass definition comes around here then
 
   // The class definition is here...
