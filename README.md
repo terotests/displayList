@@ -5,6 +5,11 @@ Couple simple demos
 * http://jsfiddle.net/564hexyx/
 * http://jsfiddle.net/scca1dmh/
 
+Simple image edit demo
+
+* http://jsfiddle.net/qjz8053x/
+
+
 
 
 
