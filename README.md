@@ -1148,6 +1148,7 @@ Couple simple demos
 ##### trait _dataTrait
 
 - [guid](README.md#_dataTrait_guid)
+- [indexOf](README.md#_dataTrait_indexOf)
 - [isArray](README.md#_dataTrait_isArray)
 - [isFunction](README.md#_dataTrait_isFunction)
 - [isObject](README.md#_dataTrait_isObject)
@@ -12230,7 +12231,7 @@ if(!parentElem) {
     obj = this;
 }
 
-this.then( function() {
+obj._model.then( function() {
 
     if(!obj.items) return;
     
@@ -13236,6 +13237,13 @@ this.items = {
         var mo = model.items.at(i);
         if(mo) return displayItem( mo );
     }, 
+    indexOf : function(i) {
+        if(typeof(i)=="undefined") return -1;
+        if(i._callRender) {
+            return model.items.indexOf( i.model() );
+        }
+        return model.items.indexOf( i );
+    },
     item : function(i) {
         var mo = model.items.at(i);
         if(mo) return displayItem( mo );
@@ -14469,6 +14477,24 @@ function s4() {
 
 return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
        s4() + '-' + s4() + s4() + s4();*/
+```
+
+### <a name="_dataTrait_indexOf"></a>_dataTrait::indexOf(i)
+
+
+```javascript
+
+if(typeof(i)=="undefined") {
+    return this._model.indexOf();
+}
+
+if(!this._model || !this._model.items) return -1;
+
+if(i._callRender) {
+    return this._model.items.indexOf( i.model() );
+}
+return this._model.items.indexOf( i );
+
 ```
 
 ### <a name="_dataTrait_isArray"></a>_dataTrait::isArray(t)

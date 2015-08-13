@@ -4295,6 +4295,17 @@
   };
   surfaceDomSVG.prototype = new surfaceDomSVG_prototype();
 
+  (function () {
+    if (typeof define !== "undefined" && define !== null && define.amd != null) {
+      __amdDefs__["surfaceDomSVG"] = surfaceDomSVG;
+      this.surfaceDomSVG = surfaceDomSVG;
+    } else if (typeof module !== "undefined" && module !== null && module.exports != null) {
+      module.exports["surfaceDomSVG"] = surfaceDomSVG;
+    } else {
+      this.surfaceDomSVG = surfaceDomSVG;
+    }
+  }).call(new Function("return this")());
+
   // the subclass definition comes around here then
 
   // The class definition is here...
@@ -10542,6 +10553,17 @@
   };
   svgPathParser.prototype = new svgPathParser_prototype();
 
+  (function () {
+    if (typeof define !== "undefined" && define !== null && define.amd != null) {
+      __amdDefs__["svgPathParser"] = svgPathParser;
+      this.svgPathParser = svgPathParser;
+    } else if (typeof module !== "undefined" && module !== null && module.exports != null) {
+      module.exports["svgPathParser"] = svgPathParser;
+    } else {
+      this.svgPathParser = svgPathParser;
+    }
+  }).call(new Function("return this")());
+
   // the subclass definition comes around here then
 
   // The class definition is here...
@@ -11125,6 +11147,23 @@
         }
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
         s4() + '-' + s4() + s4() + s4();*/
+      };
+
+      /**
+       * @param float i
+       */
+      _myTrait_.indexOf = function (i) {
+
+        if (typeof i == "undefined") {
+          return this._model.indexOf();
+        }
+
+        if (!this._model || !this._model.items) return -1;
+
+        if (i._callRender) {
+          return this._model.items.indexOf(i.model());
+        }
+        return this._model.items.indexOf(i);
       };
 
       /**
@@ -12561,7 +12600,7 @@
           obj = this;
         }
 
-        this.then(function () {
+        obj._model.then(function () {
 
           if (!obj.items) return;
 
@@ -13519,6 +13558,13 @@
           at: function at(i) {
             var mo = model.items.at(i);
             if (mo) return displayItem(mo);
+          },
+          indexOf: function indexOf(i) {
+            if (typeof i == "undefined") return -1;
+            if (i._callRender) {
+              return model.items.indexOf(i.model());
+            }
+            return model.items.indexOf(i);
           },
           item: function item(i) {
             var mo = model.items.at(i);
