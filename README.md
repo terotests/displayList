@@ -8,6 +8,8 @@ Couple simple demos
 Simple image edit demo
 
 * http://jsfiddle.net/qjz8053x/
+* http://jsfiddle.net/jm917okL/
+
 
 
 
