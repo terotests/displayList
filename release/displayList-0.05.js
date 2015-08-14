@@ -12472,7 +12472,6 @@
         if (this.items && !noRecurse) {
           var rm = this._renderMatrix;
           this.items.forEach(function (i) {
-            if (i.isFulfilled && !i.isFulfilled()) return;
             if (i.applyTransforms) {
               i.applyTransforms(rm);
             }
@@ -13568,6 +13567,7 @@
           },
           forEach: function forEach(fn) {
             model.items.forEach(function (item) {
+              if (item.isFullfilled && !item.isFulfilled()) return;
               var di = displayItem(item);
               if (di) {
                 fn(di);
@@ -13579,6 +13579,7 @@
           },
           at: function at(i) {
             var mo = model.items.at(i);
+            if (mo.isFullfilled && !mo.isFulfilled()) return;
             if (mo) return displayItem(mo);
           },
           indexOf: function indexOf(i) {
@@ -13590,6 +13591,7 @@
           },
           item: function item(i) {
             var mo = model.items.at(i);
+            if (mo.isFullfilled && !mo.isFulfilled()) return;
             if (mo) return displayItem(mo);
           }
         };
