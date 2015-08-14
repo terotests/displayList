@@ -14952,10 +14952,10 @@ return this._model.get("renderClass");
 
 ```javascript
 if(typeof(t) != "undefined") {
-    this._ri = t; 
+    this._model.set("ri", t);
     return this;
 }
-return this._ri || 0;
+return this._model.get("ri");
 
 ```
 
@@ -14964,10 +14964,10 @@ return this._ri || 0;
 
 ```javascript
 if(typeof(t) != "undefined") {
-    this._rj = t; 
+    this._model.set("rj", t);
     return this;
 }
-return this._rj || 0;
+return this._model.get("rj");
 ```
 
 ### <a name="properties_scaleFactor"></a>properties::scaleFactor(t)

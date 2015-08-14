@@ -11621,10 +11621,10 @@
        */
       _myTrait_.ri = function (t) {
         if (typeof t != "undefined") {
-          this._ri = t;
+          this._model.set("ri", t);
           return this;
         }
-        return this._ri || 0;
+        return this._model.get("ri");
       };
 
       /**
@@ -11632,10 +11632,10 @@
        */
       _myTrait_.rj = function (t) {
         if (typeof t != "undefined") {
-          this._rj = t;
+          this._model.set("rj", t);
           return this;
         }
-        return this._rj || 0;
+        return this._model.get("rj");
       };
 
       /**
