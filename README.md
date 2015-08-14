@@ -14955,7 +14955,7 @@ if(typeof(t) != "undefined") {
     this._model.set("ri", t);
     return this;
 }
-return this._model.get("ri");
+return this._model.get("ri") || 0;
 
 ```
 
@@ -14967,7 +14967,7 @@ if(typeof(t) != "undefined") {
     this._model.set("rj", t);
     return this;
 }
-return this._model.get("rj");
+return this._model.get("rj") || 0;
 ```
 
 ### <a name="properties_scaleFactor"></a>properties::scaleFactor(t)

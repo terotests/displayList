@@ -11624,7 +11624,7 @@
           this._model.set("ri", t);
           return this;
         }
-        return this._model.get("ri");
+        return this._model.get("ri") || 0;
       };
 
       /**
@@ -11635,7 +11635,7 @@
           this._model.set("rj", t);
           return this;
         }
-        return this._model.get("rj");
+        return this._model.get("rj") || 0;
       };
 
       /**
