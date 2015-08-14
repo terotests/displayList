@@ -13229,7 +13229,7 @@ this.items = {
     },     
     forEach : function(fn) {
         model.items.forEach( function(item) {
-            if(item.isFullfilled && !item.isFulfilled()) return;
+            if(item.isFulfilled && !item.isFulfilled()) return;
             var di = displayItem( item );
             if(di) {
                 fn(di);
@@ -13241,7 +13241,7 @@ this.items = {
     },
     at : function(i) {
         var mo = model.items.at(i);
-        if(mo.isFullfilled && !mo.isFulfilled()) return;
+        if(mo.isFulfilled && !mo.isFulfilled()) return;
         if(mo) return displayItem( mo );
     }, 
     indexOf : function(i) {
@@ -13253,7 +13253,7 @@ this.items = {
     },
     item : function(i) {
         var mo = model.items.at(i);
-        if(mo.isFullfilled && !mo.isFulfilled()) return;
+        if(mo.isFulfilled && !mo.isFulfilled()) return;
         if(mo) return displayItem( mo );
     }
 }
