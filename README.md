@@ -7,8 +7,7 @@ Couple simple demos
 
 Simple image edit demo
 
-* http://jsfiddle.net/qjz8053x/
-* http://jsfiddle.net/jm917okL/
+* http://jsfiddle.net/37mjt37y/
 
 
 
