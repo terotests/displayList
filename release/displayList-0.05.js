@@ -13581,7 +13581,7 @@
               var newItem = displayItem(model.items.at(i));
               setTimeout(function () {
                 var forced = _data(model.items.at(i)._docData.__id, null, model._client);
-                console.log("Insert", newItem);
+                // console.log("Insert", newItem);
                 newItem.render();
               }, 100);
             });
