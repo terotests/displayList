@@ -2947,9 +2947,11 @@ if(_renderFns[rt]) {
     }
 
     if(rendData.state==1) {
-        fnData.start( obj, display, rendData );
-        obj.projectToCamera( display.getCamera() );
-        fnData.refresh( obj, display, rendData  );
+        if(obj && obj._model && obj._model.isFulfilled()) {
+            fnData.start( obj, display, rendData );
+            obj.projectToCamera( display.getCamera() );
+            fnData.refresh( obj, display, rendData  );
+        }
     }
     
     if(rendData.state==2) {
@@ -5966,7 +5968,7 @@ if (!data.viewObj) {
     data.viewObj = data.viewG.g();
     data.childG = data.viewG.g();
     
-    obj.domMVC(data.childG);
+    obj.domMVC(data.childG, null, data);
     
     obj.matchDomPosition( main, data.viewG, obj);
 
@@ -6034,28 +6036,26 @@ data.viewObj = null;
 
 var surface = display.getSurface();
 if (!data.viewObj) {
-
-var main = surface.getSvg();
-var p = obj.displayParent();
-
-if (p) {
-  var pData = p.getRenderData();
-  if (pData.viewG) {
-    main = pData.childG;
-  }
-}
-
-data.viewG = main.g();
-data.viewObj = data.viewG.rect();
-data.childG = data.viewG.g();
-obj.draggableFor(data.viewObj, display);
-
-obj.domMVC(data.childG);
-
-     obj.matchDomPosition( main, data.viewG, obj);
-//    data.viewG._index = obj.indexOf();
-
-
+    
+    var main = surface.getSvg();
+    var p = obj.displayParent();
+    
+    if (p) {
+      var pData = p.getRenderData();
+      if (pData.viewG) {
+        main = pData.childG;
+      }
+    }
+    
+    data.viewG = main.g();
+    data.viewObj = data.viewG.rect();
+    data.childG = data.viewG.g();
+    obj.draggableFor(data.viewObj, display);
+    
+    obj.domMVC(data.childG, null, data);
+    
+    obj.matchDomPosition( main, data.viewG, obj);
+    //    data.viewG._index = obj.indexOf();
 
 }
 ```
@@ -6135,7 +6135,7 @@ if (!data.viewObj) {
     data.childG = data.viewG.g();
     obj.draggableFor(data.viewObj, display);
     
-    obj.domMVC(data.childG);
+    obj.domMVC(data.childG, null, data);
     
     obj.matchDomPosition( main, data.viewG, obj);
 
@@ -6228,7 +6228,7 @@ if (!data.viewObj) {
     data.childG = data.viewG.g();
     obj.draggableFor(data.viewObj, display);
     
-    obj.domMVC(data.childG);
+    obj.domMVC(data.childG,null, data);
     
     obj.matchDomPosition( main, data.viewG, obj); 
 
@@ -6326,7 +6326,7 @@ if (!data.viewObj) {
     data.childG = data.viewG.g();
     obj.draggableFor(data.viewObj, display);
     
-    obj.domMVC(data.childG);
+    obj.domMVC(data.childG, null, data);
     
     obj.matchDomPosition( main, data.viewG, obj);
 
@@ -6439,7 +6439,7 @@ if (!data.viewObj) {
     data.childG = data.viewG.g();
     obj.draggableFor(data.viewObj, display);
     
-    obj.domMVC(data.childG);
+    obj.domMVC(data.childG, null, data);
     
     obj.matchDomPosition( main, data.viewG, obj);
 
@@ -6588,8 +6588,7 @@ data.crossLine = data.viewG.parent().parent().line().attr({
 data.childG = data.viewG.g();
 obj.draggableFor(data.viewObj, display);
 
-obj.domMVC(data.childG);
-
+obj.domMVC(data.childG, null, data);
      obj.matchDomPosition( main, data.viewG, obj);
 //    data.viewG._index = obj.indexOf();
 
@@ -6673,9 +6672,12 @@ if (!data.viewObj) {
     data.childG = data.viewG.g();
     obj.draggableFor(data.viewObj, display);
     
-    obj.domMVC(data.childG);
+    obj.domMVC(data.childG, null, data);
     
     obj.matchDomPosition( main, data.viewG, obj);
+    
+
+
 
 }
 ```
@@ -6785,7 +6787,7 @@ s.g().image({
     data.childG = data.viewG.g();
     obj.draggableFor(data.viewObj, display);
     
-    obj.domMVC(data.childG);
+    obj.domMVC(data.childG, null, data);
     
     obj.matchDomPosition( main, data.viewG, obj); 
 
@@ -11713,6 +11715,8 @@ if(me.scaleFactor) {
     me.scale( me.scaleFactor() );
     doR = true;
 }  
+
+
 ```
 
 ### <a name="displayItem__onFrame"></a>displayItem::_onFrame(t)
@@ -12226,7 +12230,7 @@ if(this._eventDelegates) {
 
 ```
 
-### <a name="displayItem_domMVC"></a>displayItem::domMVC(obj, parentElem)
+### <a name="displayItem_domMVC"></a>displayItem::domMVC(obj, parentElem, viewData)
 
 
 ```javascript
@@ -12235,10 +12239,26 @@ if(!parentElem) {
     parentElem = obj;
     obj = this;
 }
+if(!obj) {
+    console.error("No obj at domMVC ", viewData);
+    return;
+}
+
+if(!obj._model) {
+    console.error("No obj model at domMVC ", viewData);
+    return;
+}
 
 obj._model.then( function() {
 
-    if(!obj.items) return;
+    if(!obj._model.items) return;
+    
+    obj._model.on("remove", function() {
+        if(viewData && viewData.viewObj) {
+            viewData.viewG.remove();
+            delete viewData.viewObj;   
+        }                
+    });
     
     obj._model.items.on("move", function(o, cmd) {
     
@@ -12259,10 +12279,13 @@ obj._model.then( function() {
     
     });    
     obj._model.items.on("remove", function(o,i) {
-    
+        return;
         var ch = parentElem.child(i);
         if(ch) {
             ch.remove(); 
+        }
+        if(viewData && viewData.viewObj) {
+            delete viewData.viewObj;   
         }
     }); 
     
@@ -13212,58 +13235,90 @@ var me = this,
 // the display item model
 this._model = model;
 
-// The iterators for model
-this.items = {
-    push : function(objData) {
-        if(objData._callRender) {
-            // a displayItem object
-             var objModel = objData._model;
-             var oldP = objModel.parent();
-             if(oldP) {
-                 objModel.remove(); // detach from the old parent object
-             }
-             model.items.push( objModel );
-             return;
-        }
-        model.items.push( objData );
-    },     
-    forEach : function(fn) {
-        model.items.forEach( function(item) {
-            if(item.isFulfilled && !item.isFulfilled()) return;
-            var di = displayItem( item );
-            if(di) {
-                fn(di);
-            }
-        });
-    }, 
-    length : function() {
-        return model.items.length();  
-    },
-    at : function(i) {
-        var mo = model.items.at(i);
-        if(mo.isFulfilled && !mo.isFulfilled()) return;
-        if(mo) return displayItem( mo );
-    }, 
-    indexOf : function(i) {
-        if(typeof(i)=="undefined") return -1;
-        if(i._callRender) {
-            return model.items.indexOf( i.model() );
-        }
-        return model.items.indexOf( i );
-    },
-    item : function(i) {
-        var mo = model.items.at(i);
-        if(mo.isFulfilled && !mo.isFulfilled()) return;
-        if(mo) return displayItem( mo );
+var doInit = function() {
+    
+    if(model && model.items) {
+        model.items.on("insert", function(o,i) {
+            
+            // try with this...
+            var forced = _data(model.items.at(i)._docData.__id, null, model._client);
+            var newItem = displayItem( model.items.at(i) );        
+            setTimeout(
+                function() {
+                    var forced = _data(model.items.at(i)._docData.__id, null, model._client);
+                    console.log("Insert", newItem);
+                    newItem.render();
+                }, 100);
+            
+        })
     }
+    
+    // The iterators for model
+    me.items = {
+        push : function(objData) {
+            if(objData._callRender) {
+                // a displayItem object
+                 var objModel = objData._model;
+                 var oldP = objModel.parent();
+                 if(oldP) {
+                     objModel.remove(); // detach from the old parent object
+                 }
+                 model.items.push( objModel );
+                 return;
+            }
+            model.items.push( objData );
+        },     
+        forEach : function(fn) {
+            model.items.forEach( function(item) {
+                if(item.isFulfilled && !item.isFulfilled()) {
+                    console.log("Unfulfilled item");
+                    return;
+                }
+                var di = displayItem( item );
+                if(di) {
+                    fn(di);
+                }
+            });
+        }, 
+        length : function() {
+            return model.items.length();  
+        },
+        at : function(i) {
+            var mo = model.items.at(i);
+            if(mo.isFulfilled && !mo.isFulfilled()) return;
+            if(mo) return displayItem( mo );
+        }, 
+        indexOf : function(i) {
+            if(typeof(i)=="undefined") return -1;
+            if(i._callRender) {
+                return model.items.indexOf( i.model() );
+            }
+            return model.items.indexOf( i );
+        },
+        item : function(i) {
+            var mo = model.items.at(i);
+            if(mo.isFulfilled && !mo.isFulfilled()) return;
+            if(mo) return displayItem( mo );
+        }
+    }
+    
+    // add this object to the cache
+    if(!_objectCache) _objectCache = {};
+    _objectCache[model.getID()] = me;
+    
+    me._getTransfromFromModel( me, model );
+    
+
+    
+    // TODO: add the rendering
+    me.render();
+    };
+    
+if(model.isFulfilled()) {
+    doInit();
+} else {
+    model.then(doInit);
 }
-
-// add this object to the cache
-if(!_objectCache) _objectCache = {};
-_objectCache[model.getID()] = this;
-
-this._getTransfromFromModel( this, model );
-
 if(!_initDone) {
 
      var ieversion = function()
@@ -13318,10 +13373,8 @@ if(!_initDone) {
         });        
     }
     _initDone = true;
-}
+}    
 
-// TODO: add the rendering
-// this.render();
 ```
         
 ### <a name="displayItem_isDelegatingEvents"></a>displayItem::isDelegatingEvents(dispId, eventType)
