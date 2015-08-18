@@ -9,6 +9,10 @@ Simple image edit demo
 
 * http://jsfiddle.net/37mjt37y/
 
+Playback testing
+
+* http://jsfiddle.net/na6afac5/
+
 
 
 
