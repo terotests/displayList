@@ -10576,17 +10576,6 @@
   };
   svgPathParser.prototype = new svgPathParser_prototype();
 
-  (function () {
-    if (typeof define !== "undefined" && define !== null && define.amd != null) {
-      __amdDefs__["svgPathParser"] = svgPathParser;
-      this.svgPathParser = svgPathParser;
-    } else if (typeof module !== "undefined" && module !== null && module.exports != null) {
-      module.exports["svgPathParser"] = svgPathParser;
-    } else {
-      this.svgPathParser = svgPathParser;
-    }
-  }).call(new Function("return this")());
-
   // the subclass definition comes around here then
 
   // The class definition is here...
@@ -11230,6 +11219,8 @@
        */
       _myTrait_.displayParent = function (t) {
 
+        if (this._extParent) return this._extParent;
+
         var p = this._model.parent();
         if (p) {
           var pp = p.parent();
@@ -11517,6 +11508,7 @@
           this._model.set("bgcolor", t);
           return this;
         }
+        if (this._ext) return this._extModel.get("bgcolor");
         return this._model.get("bgcolor");
       };
 
@@ -11589,6 +11581,11 @@
        * @param float t
        */
       _myTrait_.parent = function (t) {
+
+        if (this._extParent) {
+          return this._extParent._model.items;
+        }
+
         var p = this._model.parent();
         if (p) {
           return this._find(p.getID());
@@ -11704,189 +11701,6 @@
           return this;
         }
         return this._model.get("text");
-      };
-
-      /**
-       * @param float t
-       */
-      _myTrait_.theList = function (t) {
-
-        var me = this;
-        var applyShadows = function applyShadows(obj, display, data, ctx) {
-          if (!obj.hasOwn("shadowColor")) {
-            obj.set("shadowColor", function (v) {
-              return "#ffee22";
-            });
-            obj.set("shadowBlur", function (v) {
-              return 20;
-            });
-          } else {
-            ctx.shadowColor = obj.shadowColor();
-            if (obj.hasOwn("shadowBlur")) ctx.shadowBlur = obj.shadowBlur();
-          }
-        };
-
-        surface.registerRenderer("image", function (obj, display, data) {
-
-          if (!data._imageObj && !data._loading) {
-            var imageObj = new Image();
-            data._loading = true;
-            imageObj.onload = function () {
-              data._imageObj = imageObj;
-              data._width = data._imageObj.width;
-              data._height = data._imageObj.height;
-              // context.drawImage(imageObj, 69, 50);
-            };
-            imageObj.src = obj.url() + "?t=" + new Date().getTime();
-          }
-        }, function (obj, display, data) {
-
-          if (data._imageObj && data._width) {
-            var ctx = display.getSurface().getContext();
-            ctx.save();
-
-            var mat = obj.getViewMatrix(display.getCamera());
-            mat.setDomContext(ctx);
-
-            ctx.globalAlpha = obj.alpha();
-
-            ctx.drawImage(data._imageObj, 0, 0, data._imageObj.width, data._imageObj.height, 0, 0, obj.w(), obj.w() * (data._height / data._width));
-
-            ctx.restore();
-          }
-        }, function (obj, display, data) {});
-
-        surface.registerRenderer("box", function (obj, display, data) {}, function (obj, display, data) {
-
-          var ctx = display.getSurface().getContext();
-          ctx.save();
-          ctx.beginPath();
-          if (obj.bgcolor) {
-            ctx.fillStyle = obj.bgcolor();
-          }
-          if (obj.alpha) {
-            ctx.globalAlpha = obj.alpha();
-          }
-          var mat = obj.getViewMatrix(display.getCamera());
-          mat.setDomContext(ctx);
-          ctx.rect(0, 0, obj.w(), obj.h());
-          applyShadows(obj, display, data, ctx);
-          ctx.fill();
-          ctx.closePath();
-          ctx.restore();
-        }, function (obj, display, data) {});
-
-        // renderer for some display class is presented like this...
-        surface.registerRenderer("circle", function (obj, display, data) {}, function (obj, display, data) {
-
-          var ctx = display.getSurface().getContext();
-          ctx.save();
-          ctx.beginPath();
-          if (obj.bgcolor) {
-            ctx.fillStyle = obj.bgcolor();
-          }
-          if (obj.alpha) {
-            ctx.globalAlpha = obj.alpha();
-          }
-          var mat = obj.getViewMatrix(display.getCamera());
-          mat.setDomContext(ctx);
-
-          var r = Math.min(obj.w() / 2, obj.h() / 2);
-          ctx.arc(r, r, r, 0, 2 * Math.PI, false);
-
-          applyShadows(obj, display, data, ctx);
-
-          ctx.fill();
-          ctx.closePath();
-          ctx.restore();
-        }, function (obj, display, data) {});
-
-        surface.registerRenderer("svgpath", function (obj, display, data) {}, function (obj, display, data) {
-
-          if (!obj.hasOwn("svgPath")) return;
-          if (!obj.svgPath()) return;
-
-          var ctx = display.getSurface().getContext();
-          ctx.save();
-
-          ctx.beginPath();
-
-          var svgPath = obj.svgPath(),
-              w = obj.w(),
-              h = obj.h();
-
-          var parser = svgPathParser();
-          parser.parse(svgPath);
-          parser.makePathAbsolute();
-          parser.fitPathInto(w, h);
-
-          if (obj.hasOwn("bgcolor")) {
-            ctx.fillStyle = obj.bgcolor();
-          }
-          if (obj.hasOwn("alpha")) {
-            ctx.globalAlpha = obj.alpha();
-          }
-          var mat = obj.getViewMatrix(display.getCamera());
-          mat.setDomContext(ctx);
-
-          parser.drawPath(ctx, w, h);
-
-          applyShadows(obj, display, data, ctx);
-
-          ctx.fill();
-          ctx.closePath();
-
-          ctx.restore();
-        }, function (obj, display, data) {});
-
-        // renderer for some display class is presented like this...
-        surface.registerRenderer("text", function (obj, display, data) {}, function (obj, display, data) {
-
-          if (!obj.hasOwn("text")) return;
-          if (!me.isFunction(obj.text)) return;
-
-          var txtAlign = "left";
-          if (obj.hasOwn("txtAlign")) txtAlign = obj.txtAlign();
-
-          var page = {
-            w: obj.w(),
-            h: obj.h(),
-            align: txtAlign,
-            fontSize: 13,
-            fitToPage: true,
-            fontFamily: "Arial"
-          };
-
-          if (obj.hasOwn("autoFit")) {
-            page.fitToPage = parseInt(obj.autoFit());
-          }
-
-          if (obj.hasOwn("fontSize")) {
-            page.fontSize = parseInt(obj.fontSize());
-          }
-
-          var ctx = display.getSurface().getContext();
-          ctx.save();
-          ctx.beginPath();
-          ctx.lineWidth = 0.01;
-          if (obj.bgcolor) {
-            ctx.fillStyle = obj.bgcolor();
-          }
-          if (obj.alpha) {
-            ctx.globalAlpha = obj.alpha();
-          }
-          var mat = obj.getViewMatrix(display.getCamera());
-          mat.setDomContext(ctx);
-
-          applyShadows(obj, display, data, ctx);
-
-          var canvTools = canvasUtils();
-          canvTools.renderText(obj.text(), page, ctx);
-
-          ctx.fill();
-          ctx.closePath();
-          ctx.restore();
-        }, function (obj, display, data) {});
       };
 
       /**
@@ -13571,11 +13385,61 @@
         // the display item model
         this._model = model;
 
+        var initExtModel = function initExtModel(id) {
+          me._ext = false; // --> loading the model
+          me._extModelId = model.get("extModelId");
+
+          var extM = _data(id);
+          extM.then(function () {
+
+            me._extModel = extM;
+            me._ext = true;
+            var localF = extM.localFork();
+            localF.then(function () {
+              // me._extModel = localF;
+              console.log("External model's source fork ");
+              console.log(extM.getData());
+              console.log("External model's local fork ");
+              console.log(localF.getData());
+              me._ext = true;
+            });
+          });
+        };
+
+        if (model.get("remoteChannel")) {
+
+          /*
+           */
+          model.openChannel(model.get("remoteChannel")).then(function (r) {
+            var extCh = r.channel;
+
+            var objId = model.get("remoteId"); // vp85p8b6wjc3dnbx9ywct91f9a
+
+            var ns = extCh._client._ns;
+
+            var theDataId = extCh._client._idToNs(objId, ns);
+
+            initExtModel(theDataId);
+
+            return;
+            var theData = _data(theDataId);
+            theData.then(function () {
+              alert("got the remoted obj opened");
+            });
+          });
+        }
+        // external model
+        if (model.get("extModelId")) {
+          initExtModel(model.get("extModelId"));
+        }
+        model.on("extModelId", function (o, newModel) {
+          initExtModel(newModel);
+        });
+
         var doInit = function doInit() {
 
           if (model && model.items) {
             model.items.on("insert", function (o, i) {
-
               // try with this...
               var forced = _data(model.items.at(i)._docData.__id, null, model._client);
               var newItem = displayItem(model.items.at(i));
@@ -13590,6 +13454,10 @@
           // The iterators for model
           me.items = {
             push: function push(objData) {
+              var m = model;
+              if (me._ext) {
+                m = me._extModel;
+              }
               if (objData._callRender) {
                 // a displayItem object
                 var objModel = objData._model;
@@ -13597,12 +13465,28 @@
                 if (oldP) {
                   objModel.remove(); // detach from the old parent object
                 }
-                model.items.push(objModel);
+                m.items.push(objModel);
                 return;
               }
-              model.items.push(objData);
+              m.items.push(objData);
             },
             forEach: function forEach(fn) {
+
+              if (me._ext) {
+                me._extModel.items.forEach(function (item) {
+                  if (item.isFulfilled && !item.isFulfilled()) {
+                    console.log("Unfulfilled item");
+                    return;
+                  }
+                  var di = displayItem(item);
+                  di._extParent = me;
+                  if (di) {
+                    fn(di);
+                  }
+                });
+                return;
+              }
+
               model.items.forEach(function (item) {
                 if (item.isFulfilled && !item.isFulfilled()) {
                   console.log("Unfulfilled item");
@@ -13615,22 +13499,29 @@
               });
             },
             length: function length() {
+              if (me._ext) return me._extModel.items.length();
               return model.items.length();
             },
             at: function at(i) {
-              var mo = model.items.at(i);
+              var m = model;
+              if (me._ext) m = me._extModel;
+              var mo = m.items.at(i);
               if (mo.isFulfilled && !mo.isFulfilled()) return;
               if (mo) return displayItem(mo);
             },
             indexOf: function indexOf(i) {
+              var m = model;
+              if (me._ext) m = me._extModel;
               if (typeof i == "undefined") return -1;
               if (i._callRender) {
-                return model.items.indexOf(i.model());
+                return m.items.indexOf(i.model());
               }
-              return model.items.indexOf(i);
+              return m.items.indexOf(i);
             },
             item: function item(i) {
-              var mo = model.items.at(i);
+              var m = model;
+              if (me._ext) m = me._extModel;
+              var mo = m.items.at(i);
               if (mo.isFulfilled && !mo.isFulfilled()) return;
               if (mo) return displayItem(mo);
             }
@@ -14853,6 +14744,90 @@
       // Initialize static variables here...
 
       /**
+       * @param float options
+       */
+      _myTrait_._initCode = function (options) {
+
+        var contDiv = options.container;
+        contDiv.addClass("displayView");
+
+        var cameraModel = _data({
+          "data": {
+            "type": "displayItem",
+            "isCamera": 1,
+            "renderClass": "camera",
+            "displayWidth": options.width,
+            "displayHeight": options.height,
+            "x": 0,
+            "y": 0,
+            "w": 77,
+            "h": 77,
+            "scaleFactor": 1,
+            "ri": 0,
+            "rj": 0,
+            "items": {
+              "data": [],
+              "__id": this.guid()
+            }
+          },
+          "__id": this.guid()
+        });
+
+        var rootPage = _data({
+          "type": "displayItem",
+          "renderClass": "page",
+          "x": 0,
+          "y": 0,
+          "scaleFactor": 1,
+          "w": options.width,
+          "h": options.height,
+          "ri": 0,
+          "rj": 0,
+          "items": [],
+          "rad": 0
+        });
+
+        rootPage.then(function () {
+          return cameraModel;
+        }).then(function () {
+
+          var camera = displayItem(cameraModel);
+          var page = displayItem(rootPage);
+          camera.setRootNode(page);
+          camera.applyTransforms();
+          var c = contDiv.div();
+          c.attr({
+            style: "position:relative;"
+          });
+          var intoDom = c.div();
+          intoDom.attr({
+            style: "position:absolute;left:0px;top:0px;"
+          });
+          var mySurface = surfaceDomSVG(intoDom._dom, options.width || 300, options.height || 300);
+          var rPacket = rendererPackageSVG();
+          rPacket.initSvg(mySurface);
+          var svgDisplay = display(camera, mySurface);
+
+          var hoverSurface = surfaceDomSVGLayer(mySurface.getHoverLayer(), options.width || 300, options.height || 300);
+          hoverSurface.svgHandles("box");
+          hoverSurface.svgHandles("circle");
+          hoverSurface.svgHandles("text");
+          hoverSurface.svgHandles("svgpath");
+
+          display(camera, hoverSurface);
+
+          contDiv.camera = function () {
+            return camera;
+          };
+          contDiv.createObject = function (className, options) {
+            return page.createObject(className, options);
+          };
+
+          contDiv.trigger("load");
+        });
+      };
+
+      /**
        * @param float t
        */
       _myTrait_.basicCamera = function (t) {
@@ -14944,6 +14919,31 @@
           },
           "__id": this.guid()
         };
+      };
+
+      /**
+       * @param float t
+       */
+      _myTrait_.ePlugin = function (t) {
+        var myDiv = _e();
+        var me = this;
+        myDiv.extendAll({
+          displayView: function displayView(width, height, options) {
+
+            var view = _e("div");
+
+            view.width(width);
+            view.height(height);
+
+            me._initCode({
+              container: view,
+              width: width,
+              height: height
+            });
+            this.add(view);
+            return view;
+          }
+        });
       };
 
       /**
@@ -15087,6 +15087,17 @@
   };
   displayView.prototype = new displayView_prototype();
 
+  (function () {
+    if (typeof define !== "undefined" && define !== null && define.amd != null) {
+      __amdDefs__["displayView"] = displayView;
+      this.displayView = displayView;
+    } else if (typeof module !== "undefined" && module !== null && module.exports != null) {
+      module.exports["displayView"] = displayView;
+    } else {
+      this.displayView = displayView;
+    }
+  }).call(new Function("return this")());
+
   if (typeof define !== "undefined" && define !== null && define.amd != null) {
     define(__amdDefs__);
   }
@@ -15149,3 +15160,10 @@ fn(pathFnData);
 */
 
 // this._renderFn();
+/*
+var localF = extM.localFork();
+localF.then( function() {
+me._extModel = localF;
+me._ext = true;
+})
+*/
