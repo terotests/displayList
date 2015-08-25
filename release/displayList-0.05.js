@@ -10574,6 +10574,17 @@
   };
   svgPathParser.prototype = new svgPathParser_prototype();
 
+  (function () {
+    if (typeof define !== "undefined" && define !== null && define.amd != null) {
+      __amdDefs__["svgPathParser"] = svgPathParser;
+      this.svgPathParser = svgPathParser;
+    } else if (typeof module !== "undefined" && module !== null && module.exports != null) {
+      module.exports["svgPathParser"] = svgPathParser;
+    } else {
+      this.svgPathParser = svgPathParser;
+    }
+  }).call(new Function("return this")());
+
   // the subclass definition comes around here then
 
   // The class definition is here...
