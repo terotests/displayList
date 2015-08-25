@@ -1495,9 +1495,7 @@
        */
       _myTrait_.registerRenderer = function (className, initFn, refreshFn, removeFn) {
 
-        console.log("*** register registerRenderer for ", className);
         if (this.isObject(initFn) && !this.isFunction(initFn)) {
-          console.log("*** setting the renderer to ", initFn);
           this._renderFns[className] = initFn;
           return;
         }
@@ -13557,13 +13555,11 @@
           _keyboard = {
             shiftDown: false
           };
-
-          // TODO: cleaner way to detect the shift down condition...
-          /*
-          $(document).on('keyup keydown', function(e){
-          _keyboard.shiftDown = e.shiftKey;
-          });    
-          */
+          if (typeof $ != "undefined") {
+            $(document).on("keyup keydown", function (e) {
+              _keyboard.shiftDown = e.shiftKey;
+            });
+          }
 
           _renderables = {
             list: [],
@@ -13652,8 +13648,8 @@
           }
         };
 
-        var docWidth = $(document).width() / 2,
-            docHeight = $(document).height() / 2,
+        var docWidth = document.body.clientWidth / 2,
+            docHeight = document.body.clientHeight / 2,
             perspective = 1000,
             dispId = display.id(),
             options = options || {};
@@ -13667,9 +13663,6 @@
           var surface = display.getSurface();
           docWidth = surface.getWidth() / 2;
           docHeight = surface.getHeight() / 2;
-        } else {
-          docWidth = document.body.clientWidth / 2;
-          docHeight = document.body.clientHeight / 2;
         }
 
         if (!this._dragListeners) this._dragListeners = {};
@@ -14773,20 +14766,24 @@
           "__id": this.guid()
         });
 
-        var rootPage = _data({
-          "type": "displayItem",
-          "renderClass": "page",
-          "x": 0,
-          "y": 0,
-          "scaleFactor": 1,
-          "w": options.width,
-          "h": options.height,
-          "ri": 0,
-          "rj": 0,
-          "items": [],
-          "rad": 0
-        });
-
+        var rootPage;
+        if (options.model) {
+          rootPage = options.model;
+        } else {
+          rootPage = _data({
+            "type": "displayItem",
+            "renderClass": "page",
+            "x": 0,
+            "y": 0,
+            "scaleFactor": 1,
+            "w": options.width,
+            "h": options.height,
+            "ri": 0,
+            "rj": 0,
+            "items": [],
+            "rad": 0
+          });
+        }
         rootPage.then(function () {
           return cameraModel;
         }).then(function () {
@@ -14814,8 +14811,19 @@
           hoverSurface.svgHandles("text");
           hoverSurface.svgHandles("svgpath");
 
-          display(camera, hoverSurface);
+          if (options.handles) {
+            if (options.handles) options.handles.forEach(function (h) {
+              hoverSurface.svgHandles(h);
+            });
+          }
 
+          display(camera, hoverSurface);
+          contDiv.svgSurface = function () {
+            return mySurface;
+          };
+          contDiv.rootPage = function () {
+            return page;
+          };
           contDiv.camera = function () {
             return camera;
           };
@@ -14932,13 +14940,17 @@
 
             var view = _e("div");
 
+            options = options || {};
+
             view.width(width);
             view.height(height);
 
             me._initCode({
               container: view,
               width: width,
-              height: height
+              height: height,
+              handles: options.handles,
+              model: options.model
             });
             this.add(view);
             return view;
