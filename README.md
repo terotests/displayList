@@ -1307,6 +1307,11 @@ rootPage.then( function() {
             
             var camera = displayItem( cameraModel );
             var page = displayItem( rootPage );
+            
+            var scaleFactorForCamera = page.w() / options.width;
+            // => refresh the size
+            camera.scaleFactor( scaleFactorForCamera );
+
             camera.setRootNode( page );
             camera.applyTransforms();
             var c = contDiv.div();
@@ -1335,6 +1340,26 @@ rootPage.then( function() {
             }
             
             display( camera, hoverSurface );
+            
+            contDiv.on("width", function(o,v) {
+                var scaleFactorForCamera = page.w() / contDiv.width();
+                camera.scaleFactor( scaleFactorForCamera );
+                camera.applyTransforms();
+                if(mySurface._svgElem) {
+                    mySurface._svgElem.attr({width:contDiv.width()});
+                    
+                }
+                c.width(contDiv.width());
+                intoDom.width(contDiv.width());
+            });
+            contDiv.on("height", function(o,v) {
+                if(mySurface._svgElem) {
+                    mySurface._svgElem.attr({height:contDiv.height()});
+                    
+                }
+                c.height(contDiv.height());
+                intoDom.height(contDiv.height());
+            });            
             contDiv.svgSurface = function() {
                 return mySurface;
             }  
@@ -13658,6 +13683,10 @@ this._dragListeners[dispId][eventType] = {};
 this._dragListeners[dispId][eventType] = {
     start : function(o,dv) {
 
+            var off = me.getDOMOffset( display.getSurface().getDom() );
+            dragInfo.displayPos.x = off.x;
+            dragInfo.displayPos.y = off.y;
+            
             perspective = 1000;    
             //console.log("Document size");
             //console.log(docWidth, docHeight, perspective);

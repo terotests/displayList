@@ -13686,6 +13686,10 @@
         this._dragListeners[dispId][eventType] = {
           start: function start(o, dv) {
 
+            var off = me.getDOMOffset(display.getSurface().getDom());
+            dragInfo.displayPos.x = off.x;
+            dragInfo.displayPos.y = off.y;
+
             perspective = 1000;
             //console.log("Document size");
             //console.log(docWidth, docHeight, perspective);
