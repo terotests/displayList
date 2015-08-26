@@ -15105,7 +15105,7 @@
             parser.fitPathInto(w, h);
 
             doc.path(parser.svgString());
-            doc.opacity(obj.get("alpha"));
+            doc.fillOpacity(parseFloat(obj.get("alpha")));
             doc.fill(obj.get("bgcolor"), "even-odd");
             doc.restore();
           },
