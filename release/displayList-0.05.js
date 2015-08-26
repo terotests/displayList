@@ -15095,6 +15095,10 @@
             polygon(points...)
             */
 
+            var svgPath = obj.svgPath(),
+                w = obj.w(),
+                h = obj.h();
+
             var parser = svgPathParser();
             parser.parse(svgPath);
             parser.makePathAbsolute();
