@@ -14744,6 +14744,143 @@
     }
   }).call(new Function("return this")());
 
+  // the subclass definition comes around here then
+
+  // The class definition is here...
+  // let the private classes out
+
+  var surfacePdfKit_prototype = function surfacePdfKit_prototype() {
+    // Then create the traits and subclasses for this class here...
+
+    (function (_myTrait_) {
+      var _renderFns;
+      var _sfaceCnt;
+
+      // Initialize static variables here...
+
+      /**
+       * To enable the rendering for the PDF kit - new PDFDocument() is given as parameter
+       * @param float renderToDoc  - new PDFDocument()
+       * @param float outputIframe  - _e(&quot;iframe&quot;) which has been added
+       */
+      _myTrait_.allowRender = function (renderToDoc, outputIframe) {
+
+        if (!this._renderIndex) this._renderIndex = 1;
+
+        if (typeof renderToDoc != "undefined") {
+          this._doc = renderToDoc;
+          this._stream = renderToDoc.pipe(blobStream());
+          this._renderIndex++;
+          this._waiting = true;
+
+          var stream = this._stream;
+          var me = this;
+
+          if (outputIframe) {
+            stream.on("finish", function () {
+              me._waiting = false;
+              outputIframe.attr({
+                src: stream.toBlobURL("application/pdf")
+              });
+            });
+          }
+        }
+
+        return this._renderIndex;
+      };
+
+      /**
+       * @param float t
+       */
+      _myTrait_.frameFinish = function (t) {
+
+        if (this._waiting && this._doc) {
+          this._doc.end();
+          this._waiting = false;
+        }
+      };
+
+      /**
+       * @param float t
+       */
+      _myTrait_.getDoc = function (t) {
+        return this._doc;
+      };
+
+      /**
+       * @param float t
+       */
+      _myTrait_.getElem = function (t) {
+        return this._elem;
+      };
+
+      if (_myTrait_.__traitInit && !_myTrait_.hasOwnProperty("__traitInit")) _myTrait_.__traitInit = _myTrait_.__traitInit.slice();
+      if (!_myTrait_.__traitInit) _myTrait_.__traitInit = [];
+      _myTrait_.__traitInit.push(function (elem, width, height, doc) {
+
+        this._elem = elem;
+        this._width = width;
+        this._height = height;
+        this._doc = doc;
+
+        if (!this._renderFns) {
+          this._renderFns = {};
+        }
+      });
+
+      /**
+       * @param float t
+       */
+      _myTrait_.isRendering = function (t) {
+        return this._waiting;
+      };
+    })(this);
+  };
+
+  var surfacePdfKit = function surfacePdfKit(a, b, c, d, e, f, g, h) {
+    var m = this,
+        res;
+    if (m instanceof surfacePdfKit) {
+      var args = [a, b, c, d, e, f, g, h];
+      if (m.__factoryClass) {
+        m.__factoryClass.forEach(function (initF) {
+          res = initF.apply(m, args);
+        });
+        if (typeof res == "function") {
+          if (res._classInfo.name != surfacePdfKit._classInfo.name) return new res(a, b, c, d, e, f, g, h);
+        } else {
+          if (res) return res;
+        }
+      }
+      if (m.__traitInit) {
+        m.__traitInit.forEach(function (initF) {
+          initF.apply(m, args);
+        });
+      } else {
+        if (typeof m.init == "function") m.init.apply(m, args);
+      }
+    } else return new surfacePdfKit(a, b, c, d, e, f, g, h);
+  };
+  // inheritance is here surface
+
+  surfacePdfKit_prototype.prototype = surface.prototype;
+
+  surfacePdfKit._classInfo = {
+    name: "surfacePdfKit"
+  };
+  surfacePdfKit.prototype = new surfacePdfKit_prototype();
+
+  (function () {
+    if (typeof define !== "undefined" && define !== null && define.amd != null) {
+      __amdDefs__["surfacePdfKit"] = surfacePdfKit;
+      this.surfacePdfKit = surfacePdfKit;
+    } else if (typeof module !== "undefined" && module !== null && module.exports != null) {
+      module.exports["surfacePdfKit"] = surfacePdfKit;
+    } else {
+      this.surfacePdfKit = surfacePdfKit;
+    }
+  }).call(new Function("return this")());
+
   var displayView_prototype = function displayView_prototype() {
     // Then create the traits and subclasses for this class here...
 
@@ -14874,6 +15011,101 @@
           };
 
           contDiv.trigger("load");
+        });
+      };
+
+      /**
+       * @param Object surface
+       */
+      _myTrait_._pdfkitRenderers = function (surface) {
+        surface.registerRenderer("circle", {
+          start: function start(obj, display, data) {},
+          refresh: function refresh(obj, display, data) {
+
+            var surface = display.getSurface();
+
+            if (!surface.isRendering()) return;
+
+            var doc = surface.getDoc();
+
+            doc.save();
+
+            var mat = obj.getViewMatrix(display.getCamera());
+            doc.transform(mat.m00(), mat.m01(), mat.m10(), mat.m11(), mat.m30(), mat.m31());
+            /*
+            rect(x, y, width, height)
+            roundedRect(x, y, width, height, cornerRadius)
+            ellipse(centerX, centerY, radiusX, radiusY = radiusX)
+            circle(centerX, centerY, radius)
+            polygon(points...)
+            */
+            var r = Math.min(obj.w() / 2, obj.h() / 2);
+            doc.circle(r, r, r);
+            doc.opacity(obj.get("alpha"));
+            doc.fill(obj.get("bgcolor"), "even-odd");
+            doc.restore();
+          },
+          end: function end() {}
+        });
+        surface.registerRenderer("box", {
+          start: function start(obj, display, data) {},
+          refresh: function refresh(obj, display, data) {
+
+            var surface = display.getSurface();
+            if (!surface.isRendering()) return;
+
+            var doc = surface.getDoc();
+
+            doc.save();
+
+            var mat = obj.getViewMatrix(display.getCamera());
+            doc.transform(mat.m00(), mat.m01(), mat.m10(), mat.m11(), mat.m30(), mat.m31());
+            /*
+            rect(x, y, width, height)
+            roundedRect(x, y, width, height, cornerRadius)
+            ellipse(centerX, centerY, radiusX, radiusY = radiusX)
+            circle(centerX, centerY, radius)
+            polygon(points...)
+            */
+            doc.rect(0, 0, obj.w(), obj.h());
+            doc.opacity(obj.get("alpha"));
+            doc.fill(obj.get("bgcolor"), "even-odd");
+            doc.restore();
+          },
+          end: function end() {}
+        });
+        surface.registerRenderer("svgpath", {
+          start: function start(obj, display, data) {},
+          refresh: function refresh(obj, display, data) {
+
+            var surface = display.getSurface();
+            if (!surface.isRendering()) return;
+
+            var doc = surface.getDoc();
+
+            doc.save();
+
+            var mat = obj.getViewMatrix(display.getCamera());
+            doc.transform(mat.m00(), mat.m01(), mat.m10(), mat.m11(), mat.m30(), mat.m31());
+            /*
+            rect(x, y, width, height)
+            roundedRect(x, y, width, height, cornerRadius)
+            ellipse(centerX, centerY, radiusX, radiusY = radiusX)
+            circle(centerX, centerY, radius)
+            polygon(points...)
+            */
+
+            var parser = svgPathParser();
+            parser.parse(svgPath);
+            parser.makePathAbsolute();
+            parser.fitPathInto(w, h);
+
+            doc.path(parser.svgPath());
+            doc.opacity(obj.get("alpha"));
+            doc.fill(obj.get("bgcolor"), "even-odd");
+            doc.restore();
+          },
+          end: function end() {}
         });
       };
 

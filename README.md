@@ -40,6 +40,7 @@ Playback testing
 
 
 - [_initCode](README.md#displayView__initCode)
+- [_pdfkitRenderers](README.md#displayView__pdfkitRenderers)
 - [basicCamera](README.md#displayView_basicCamera)
 - [basicData](README.md#displayView_basicData)
 - [ePlugin](README.md#displayView_ePlugin)
@@ -49,6 +50,8 @@ Playback testing
 
 
    
+    
+    
     
     
     
@@ -1250,6 +1253,28 @@ Playback testing
 
       
     
+      
+            
+#### Class surfacePdfKit
+
+
+- [allowRender](README.md#surfacePdfKit_allowRender)
+- [frameFinish](README.md#surfacePdfKit_frameFinish)
+- [getDoc](README.md#surfacePdfKit_getDoc)
+- [getElem](README.md#surfacePdfKit_getElem)
+- [isRendering](README.md#surfacePdfKit_isRendering)
+
+
+
+   
+
+
+   
+
+
+
+      
+    
 
 
 
@@ -1376,6 +1401,107 @@ rootPage.then( function() {
             contDiv.trigger("load");
 
         });
+```
+
+### <a name="displayView__pdfkitRenderers"></a>displayView::_pdfkitRenderers(surface)
+
+
+```javascript
+surface.registerRenderer("circle", {
+    start : function(obj, display, data) {
+    },
+    refresh : function(obj, display, data) {
+        
+        var surface = display.getSurface();
+        
+        if(!surface.isRendering()) return;
+        
+        var doc = surface.getDoc();
+        
+        doc.save();
+
+        var mat = obj.getViewMatrix(display.getCamera());
+        doc.transform(mat.m00(),mat.m01(),mat.m10(), mat.m11(), mat.m30(), mat.m31());
+/*
+rect(x, y, width, height)
+roundedRect(x, y, width, height, cornerRadius)
+ellipse(centerX, centerY, radiusX, radiusY = radiusX)
+circle(centerX, centerY, radius)
+polygon(points...)
+*/
+        var r = Math.min( obj.w()/2, obj.h()/2 );
+        doc.circle( r,r,r );
+        doc.opacity( obj.get("alpha") );
+        doc.fill( obj.get("bgcolor"), 'even-odd');
+        doc.restore();        
+    },
+    end : function() {
+    }
+})
+surface.registerRenderer("box", {
+    start : function(obj, display, data) {
+    },
+    refresh : function(obj, display, data) {
+        
+        var surface = display.getSurface();
+        if(!surface.isRendering()) return;
+        
+        var doc = surface.getDoc();
+        
+        doc.save();
+
+        var mat = obj.getViewMatrix(display.getCamera());
+        doc.transform(mat.m00(),mat.m01(),mat.m10(), mat.m11(), mat.m30(), mat.m31());
+/*
+rect(x, y, width, height)
+roundedRect(x, y, width, height, cornerRadius)
+ellipse(centerX, centerY, radiusX, radiusY = radiusX)
+circle(centerX, centerY, radius)
+polygon(points...)
+*/
+        doc.rect( 0,0, obj.w(), obj.h() );
+        doc.opacity( obj.get("alpha") );
+        doc.fill( obj.get("bgcolor"), 'even-odd');
+        doc.restore();        
+    },
+    end : function() {
+    }
+})
+surface.registerRenderer("svgpath", {
+    start : function(obj, display, data) {
+    },
+    refresh : function(obj, display, data) {
+        
+        var surface = display.getSurface();
+        if(!surface.isRendering()) return;
+        
+        var doc = surface.getDoc();
+        
+        doc.save();
+
+        var mat = obj.getViewMatrix(display.getCamera());
+        doc.transform(mat.m00(),mat.m01(),mat.m10(), mat.m11(), mat.m30(), mat.m31());
+/*
+rect(x, y, width, height)
+roundedRect(x, y, width, height, cornerRadius)
+ellipse(centerX, centerY, radiusX, radiusY = radiusX)
+circle(centerX, centerY, radius)
+polygon(points...)
+*/
+
+        var parser = svgPathParser();
+        parser.parse(svgPath);
+        parser.makePathAbsolute();
+        parser.fitPathInto( w, h );
+
+        doc.path( parser.svgPath() );
+        doc.opacity( obj.get("alpha") );
+        doc.fill( obj.get("bgcolor"), 'even-odd');
+        doc.restore();        
+    },
+    end : function() {
+    }
+})
 ```
 
 ### <a name="displayView_basicCamera"></a>displayView::basicCamera(t)
@@ -1617,6 +1743,8 @@ return result;
 
 
    
+    
+    
     
     
     
@@ -15433,6 +15561,108 @@ return this;
     
       
     
+
+
+
+      
+    
+      
+            
+# Class surfacePdfKit
+
+
+The class has following internal singleton variables:
+        
+* _renderFns
+        
+* _sfaceCnt
+        
+        
+### <a name="surfacePdfKit_allowRender"></a>surfacePdfKit::allowRender(renderToDoc, outputIframe)
+`renderToDoc` new PDFDocument() 
+ 
+`outputIframe` _e(&quot;iframe&quot;) which has been added
+ 
+
+To enable the rendering for the PDF kit - new PDFDocument() is given as parameter
+```javascript
+
+if(!this._renderIndex) this._renderIndex = 1;
+
+if(typeof(renderToDoc) != "undefined") {
+    this._doc = renderToDoc;
+    this._stream = renderToDoc.pipe(blobStream());    
+    this._renderIndex++;
+    this._waiting = true;
+    
+    var stream = this._stream;
+    var me = this;
+
+    if(outputIframe) {
+        stream.on('finish', function() {
+          me._waiting = false;
+          outputIframe.attr({ src : stream.toBlobURL('application/pdf') } );
+        });    
+    }
+    
+}
+
+return this._renderIndex;
+```
+
+### <a name="surfacePdfKit_frameFinish"></a>surfacePdfKit::frameFinish(t)
+
+
+```javascript
+
+if(this._waiting && this._doc) {
+    this._doc.end();
+    this._waiting = false;
+}
+```
+
+### <a name="surfacePdfKit_getDoc"></a>surfacePdfKit::getDoc(t)
+
+
+```javascript
+return this._doc;
+```
+
+### <a name="surfacePdfKit_getElem"></a>surfacePdfKit::getElem(t)
+
+
+```javascript
+return this._elem;
+```
+
+### surfacePdfKit::constructor( elem, width, height, doc )
+
+```javascript
+
+this._elem = elem;
+this._width = width;
+this._height = height;
+this._doc = doc;
+
+
+if(!this._renderFns) {
+    this._renderFns = {};
+}
+```
+        
+### <a name="surfacePdfKit_isRendering"></a>surfacePdfKit::isRendering(t)
+
+
+```javascript
+return this._waiting;
+```
+
+
+
+   
+
+
+   
 
 
 
