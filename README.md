@@ -1494,7 +1494,7 @@ polygon(points...)
         parser.makePathAbsolute();
         parser.fitPathInto( w, h );
 
-        doc.path( parser.svgPath() );
+        doc.path( parser.svgString() );
         doc.opacity( obj.get("alpha") );
         doc.fill( obj.get("bgcolor"), 'even-odd');
         doc.restore();        
