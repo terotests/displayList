@@ -14782,6 +14782,7 @@
               outputIframe.attr({
                 src: stream.toBlobURL("application/pdf")
               });
+              outputIframe.trigger("stream", stream);
             });
           }
         }
