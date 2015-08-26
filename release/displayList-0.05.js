@@ -15033,13 +15033,7 @@
 
             var mat = obj.getViewMatrix(display.getCamera());
             doc.transform(mat.m00(), mat.m01(), mat.m10(), mat.m11(), mat.m30(), mat.m31());
-            /*
-            rect(x, y, width, height)
-            roundedRect(x, y, width, height, cornerRadius)
-            ellipse(centerX, centerY, radiusX, radiusY = radiusX)
-            circle(centerX, centerY, radius)
-            polygon(points...)
-            */
+
             var r = Math.min(obj.w() / 2, obj.h() / 2);
             doc.circle(r, r, r);
             doc.fillColor(obj.get("bgcolor"), obj.get("alpha"));
@@ -15056,18 +15050,11 @@
             if (!surface.isRendering()) return;
 
             var doc = surface.getDoc();
-
             doc.save();
 
             var mat = obj.getViewMatrix(display.getCamera());
             doc.transform(mat.m00(), mat.m01(), mat.m10(), mat.m11(), mat.m30(), mat.m31());
-            /*
-            rect(x, y, width, height)
-            roundedRect(x, y, width, height, cornerRadius)
-            ellipse(centerX, centerY, radiusX, radiusY = radiusX)
-            circle(centerX, centerY, radius)
-            polygon(points...)
-            */
+
             doc.rect(0, 0, obj.w(), obj.h());
             doc.fillColor(obj.get("bgcolor"), obj.get("alpha"));
             doc.fill();
@@ -15088,13 +15075,6 @@
 
             var mat = obj.getViewMatrix(display.getCamera());
             doc.transform(mat.m00(), mat.m01(), mat.m10(), mat.m11(), mat.m30(), mat.m31());
-            /*
-            rect(x, y, width, height)
-            roundedRect(x, y, width, height, cornerRadius)
-            ellipse(centerX, centerY, radiusX, radiusY = radiusX)
-            circle(centerX, centerY, radius)
-            polygon(points...)
-            */
 
             var svgPath = obj.svgPath(),
                 w = obj.w(),

@@ -1422,17 +1422,11 @@ surface.registerRenderer("circle", {
 
         var mat = obj.getViewMatrix(display.getCamera());
         doc.transform(mat.m00(),mat.m01(),mat.m10(), mat.m11(), mat.m30(), mat.m31());
-/*
-rect(x, y, width, height)
-roundedRect(x, y, width, height, cornerRadius)
-ellipse(centerX, centerY, radiusX, radiusY = radiusX)
-circle(centerX, centerY, radius)
-polygon(points...)
-*/
+
         var r = Math.min( obj.w()/2, obj.h()/2 );
         doc.circle( r,r,r );
-        doc.opacity( obj.get("alpha") );
-        doc.fill( obj.get("bgcolor"), 'even-odd');
+        doc.fillColor(obj.get("bgcolor"), obj.get("alpha"));
+        doc.fill();
         doc.restore();        
     },
     end : function() {
@@ -1447,21 +1441,14 @@ surface.registerRenderer("box", {
         if(!surface.isRendering()) return;
         
         var doc = surface.getDoc();
-        
         doc.save();
 
         var mat = obj.getViewMatrix(display.getCamera());
         doc.transform(mat.m00(),mat.m01(),mat.m10(), mat.m11(), mat.m30(), mat.m31());
-/*
-rect(x, y, width, height)
-roundedRect(x, y, width, height, cornerRadius)
-ellipse(centerX, centerY, radiusX, radiusY = radiusX)
-circle(centerX, centerY, radius)
-polygon(points...)
-*/
+
         doc.rect( 0,0, obj.w(), obj.h() );
-        doc.opacity( obj.get("alpha") );
-        doc.fill( obj.get("bgcolor"), 'even-odd');
+        doc.fillColor(obj.get("bgcolor"), obj.get("alpha"));
+        doc.fill();
         doc.restore();        
     },
     end : function() {
@@ -1481,13 +1468,10 @@ surface.registerRenderer("svgpath", {
 
         var mat = obj.getViewMatrix(display.getCamera());
         doc.transform(mat.m00(),mat.m01(),mat.m10(), mat.m11(), mat.m30(), mat.m31());
-/*
-rect(x, y, width, height)
-roundedRect(x, y, width, height, cornerRadius)
-ellipse(centerX, centerY, radiusX, radiusY = radiusX)
-circle(centerX, centerY, radius)
-polygon(points...)
-*/
+
+        var svgPath = obj.svgPath(),
+        w = obj.w(),
+        h = obj.h();
 
         var parser = svgPathParser();
         parser.parse(svgPath);
@@ -1495,8 +1479,8 @@ polygon(points...)
         parser.fitPathInto( w, h );
 
         doc.path( parser.svgString() );
-        doc.opacity( obj.get("alpha") );
-        doc.fill( obj.get("bgcolor"), 'even-odd');
+        doc.fillColor(obj.get("bgcolor"), obj.get("alpha"));
+        doc.fill();
         doc.restore();        
     },
     end : function() {
@@ -15602,6 +15586,7 @@ if(typeof(renderToDoc) != "undefined") {
         stream.on('finish', function() {
           me._waiting = false;
           outputIframe.attr({ src : stream.toBlobURL('application/pdf') } );
+          outputIframe.trigger("stream", stream );
         });    
     }
     
