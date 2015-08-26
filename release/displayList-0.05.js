@@ -15041,8 +15041,8 @@
             */
             var r = Math.min(obj.w() / 2, obj.h() / 2);
             doc.circle(r, r, r);
-            doc.opacity(obj.get("alpha"));
-            doc.fill(obj.get("bgcolor"), "even-odd");
+            doc.fillColor(obj.get("bgcolor"), obj.get("alpha"));
+            doc.fill();
             doc.restore();
           },
           end: function end() {}
@@ -15068,8 +15068,8 @@
             polygon(points...)
             */
             doc.rect(0, 0, obj.w(), obj.h());
-            doc.opacity(obj.get("alpha"));
-            doc.fill(obj.get("bgcolor"), "even-odd");
+            doc.fillColor(obj.get("bgcolor"), obj.get("alpha"));
+            doc.fill();
             doc.restore();
           },
           end: function end() {}
@@ -15105,8 +15105,8 @@
             parser.fitPathInto(w, h);
 
             doc.path(parser.svgString());
-            doc.fillOpacity(parseFloat(obj.get("alpha")));
-            doc.fill(obj.get("bgcolor"), "even-odd");
+            doc.fillColor(obj.get("bgcolor"), obj.get("alpha"));
+            doc.fill();
             doc.restore();
           },
           end: function end() {}
