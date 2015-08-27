@@ -5901,6 +5901,121 @@
   };
   svgImageRenderer.prototype = new svgImageRenderer_prototype();
 
+  // the subclass definition comes around here then
+
+  // The class definition is here...
+  // let the private classes out
+
+  var svgPathRenderer2_prototype = function svgPathRenderer2_prototype() {
+    // Then create the traits and subclasses for this class here...
+
+    (function (_myTrait_) {
+
+      // Initialize static variables here...
+
+      /**
+       * @param float obj
+       * @param float display
+       * @param float data
+       */
+      _myTrait_.end = function (obj, display, data) {
+        data.viewG.remove();
+        data.viewG = null;
+        data.viewObj = null;
+      };
+
+      /**
+       * @param float obj
+       * @param float display
+       * @param float data
+       */
+      _myTrait_.refresh = function (obj, display, data) {
+        var svgPath = obj.svgPath(),
+            w = obj.w(),
+            h = obj.h();
+
+        var surface = display.getSurface();
+        var bgStyle = "";
+        var r = Math.min(obj.w() / 2, obj.h() / 2);
+        var aList = {
+          d: svgPath
+        };
+        if (obj.bgcolor) {
+          aList["fill"] = obj.bgcolor();
+        }
+        if (obj.alpha) {
+          aList["fill-opacity"] = obj.alpha();
+        }
+        data.viewObj.attr(aList);
+        data.viewG.attr({
+          transform: obj.getLocalTransform().getSVGTransform()
+        });
+      };
+
+      /**
+       * @param float obj
+       * @param float display
+       * @param float data
+       */
+      _myTrait_.start = function (obj, display, data) {
+
+        var surface = display.getSurface();
+        if (!data.viewObj) {
+
+          var main = surface.getSvg();
+          var p = obj.displayParent();
+
+          if (p) {
+            var pData = p.getRenderData();
+            if (pData.viewG) {
+              main = pData.childG;
+            }
+          }
+
+          data.viewG = main.g();
+          data.viewObj = data.viewG.path();
+          data.childG = data.viewG.g();
+          obj.draggableFor(data.viewObj, display);
+
+          obj.domMVC(data.childG, null, data);
+
+          obj.matchDomPosition(main, data.viewG, obj);
+        }
+      };
+    })(this);
+  };
+
+  var svgPathRenderer2 = function svgPathRenderer2(a, b, c, d, e, f, g, h) {
+    var m = this,
+        res;
+    if (m instanceof svgPathRenderer2) {
+      var args = [a, b, c, d, e, f, g, h];
+      if (m.__factoryClass) {
+        m.__factoryClass.forEach(function (initF) {
+          res = initF.apply(m, args);
+        });
+        if (typeof res == "function") {
+          if (res._classInfo.name != svgPathRenderer2._classInfo.name) return new res(a, b, c, d, e, f, g, h);
+        } else {
+          if (res) return res;
+        }
+      }
+      if (m.__traitInit) {
+        m.__traitInit.forEach(function (initF) {
+          initF.apply(m, args);
+        });
+      } else {
+        if (typeof m.init == "function") m.init.apply(m, args);
+      }
+    } else return new svgPathRenderer2(a, b, c, d, e, f, g, h);
+  };
+  // inheritance is here
+
+  svgPathRenderer2._classInfo = {
+    name: "svgPathRenderer2"
+  };
+  svgPathRenderer2.prototype = new svgPathRenderer2_prototype();
+
   var rendererPackageSVG_prototype = function rendererPackageSVG_prototype() {
     // Then create the traits and subclasses for this class here...
 
@@ -5925,6 +6040,7 @@
         surface.registerRenderer("circle", new svgCircleRenderer());
         surface.registerRenderer("text", new svgTextRenderer());
         surface.registerRenderer("svgpath", new svgPathRenderer());
+        surface.registerRenderer("path", new svgPathRenderer2());
 
         surface.registerRenderer("bezierpath", new svgBezierObjectRenderer());
         surface.registerRenderer("bezierpoint", new svgBezierPointRenderer());
