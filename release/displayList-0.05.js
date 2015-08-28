@@ -10220,19 +10220,21 @@
             y,
             str = "";
 
+        var dc = this._svgDecimals || 2;
+
         this._all.forEach(function (cmd) {
 
           if (cmd.name == "M") {
 
             x = cmd.points[0];
             y = cmd.points[1];
-            str += "M" + x + "," + y + " ";
+            str += "M" + x.toFixed(dc) + "," + y.toFixed(dc) + " ";
           }
 
           if (cmd.name == "m") {
             x = x + cmd.points[0];
             y = y + cmd.points[1];
-            str += "M" + x + "," + y + " ";
+            str += "M" + x.toFixed(dc) + "," + y.toFixed(dc) + " ";
           }
 
           if (cmd.name == "q") {
@@ -10247,7 +10249,7 @@
                   y1 = y + p[s + 3];
               x = x1;
               y = y1;
-              str += x0 + "," + y0 + " " + x1 + "," + y1 + " ";
+              str += x0.toFixed(dc) + "," + y0.toFixed(dc) + " " + x1.toFixed(dc) + "," + y1.toFixed(dc) + " ";
             }
           }
 
@@ -10263,7 +10265,7 @@
                   y1 = p[s + 3];
               x = x1;
               y = y1;
-              str += x0 + "," + y0 + " " + x1 + "," + y1 + " ";
+              str += x0.toFixed(dc) + "," + y0.toFixed(dc) + " " + x1.toFixed(dc) + "," + y1.toFixed(dc) + " ";
             }
           }
 
@@ -10281,7 +10283,7 @@
                   y2 = y + p[s + 5];
               x = x2;
               y = y2;
-              str += x0 + "," + y0 + " " + x1 + "," + y1 + " " + x2 + "," + y2 + " ";
+              str += x0.toFixed(dc) + "," + y0.toFixed(dc) + " " + x1.toFixed(dc) + "," + y1.toFixed(dc) + " " + x2.toFixed(dc) + "," + y2.toFixed(dc) + " ";
             }
           }
 
@@ -10306,12 +10308,12 @@
                 y: y - sp.y
               };
               var strR = cmd.replaceFunction(sp, ref);
-              console.log("The inserted path ", strR);
+              // console.log("The inserted path ", strR);
               str += " " + strR + " ";
             } else {
               str += "C";
               for (var s = 0; s < len; s += 6) {
-                str += p[s + 0] + "," + p[s + 1] + " " + p[s + 2] + "," + p[s + 3] + " " + p[s + 4] + "," + p[s + 5] + " ";
+                str += p[s + 0].toFixed(dc) + "," + p[s + 1].toFixed(dc) + " " + p[s + 2].toFixed(dc) + "," + p[s + 3].toFixed(dc) + " " + p[s + 4].toFixed(dc) + "," + p[s + 5].toFixed(dc) + " ";
                 x = p[s + 4];
                 y = p[s + 5];
               }
@@ -10325,7 +10327,7 @@
                   y0 = y + p[s + 1];
               x = x0;
               y = y0;
-              str += x0 + "," + y0 + " ";
+              str += x0.toFixed(dc) + "," + y0.toFixed(dc) + " ";
             }
           }
 
@@ -10336,7 +10338,7 @@
               var x0 = p[s + 0];
               x = x0;
               // ctx.lineTo( x0, y );
-              str += x0 + "," + y + " ";
+              str += x0.toFixed(dc) + "," + y.toFixed(dc) + " ";
             }
           }
 
@@ -10347,7 +10349,7 @@
               var y0 = p[s + 0];
               y = y0;
               // ctx.lineTo( x, y0 );
-              str += x + "," + y0 + " ";
+              str += x.toFixed(dc) + "," + y0.toFixed(dc) + " ";
             }
           }
 
@@ -10381,7 +10383,7 @@
                 x = x0;
                 y = y0;
                 // ctx.lineTo( x0,y0 );
-                str += x0 + "," + y0 + " ";
+                str += x0.toFixed(dc) + "," + y0.toFixed(dc) + " ";
               }
             }
           }
