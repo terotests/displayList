@@ -9666,8 +9666,8 @@
       _myTrait_.makePathAbsolute = function () {
 
         var _firstX, _firstY;
-        var x,
-            y,
+        var x = 0,
+            y = 0,
             lastBx,
             lastBy,
             bNoBx = true;
