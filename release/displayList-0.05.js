@@ -15180,7 +15180,7 @@
 
           var cmyk = [computedC, computedM, computedY, computedK];
           for (var i = 0; i < 4; i++) cmyk[i] = parseInt(cmyk[i] * 100);
-          console.log("CMYK ", cmyk);
+
           return cmyk;
         };
 
