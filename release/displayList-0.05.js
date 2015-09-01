@@ -15137,6 +15137,52 @@
        * @param Object surface
        */
       _myTrait_._pdfkitRenderers = function (surface) {
+
+        var rgb2cmyk = function rgb2cmyk(color) {
+
+          var color = _e().toRGB(color);
+          var r = color.r,
+              g = color.g,
+              b = color.b;
+
+          var computedC = 0;
+          var computedM = 0;
+          var computedY = 0;
+          var computedK = 0;
+
+          //remove spaces from input RGB values, convert to int
+          var r = parseInt(("" + r).replace(/\s/g, ""), 10);
+          var g = parseInt(("" + g).replace(/\s/g, ""), 10);
+          var b = parseInt(("" + b).replace(/\s/g, ""), 10);
+
+          if (r == null || g == null || b == null || isNaN(r) || isNaN(g) || isNaN(b)) {
+            return;
+          }
+          if (r < 0 || g < 0 || b < 0 || r > 255 || g > 255 || b > 255) {
+            return;
+          }
+
+          // BLACK
+          if (r == 0 && g == 0 && b == 0) {
+            computedK = 1;
+            return [0, 0, 0, 1];
+          }
+
+          computedC = 1 - r / 255;
+          computedM = 1 - g / 255;
+          computedY = 1 - b / 255;
+
+          var minCMY = Math.min(computedC, Math.min(computedM, computedY));
+          computedC = (computedC - minCMY) / (1 - minCMY);
+          computedM = (computedM - minCMY) / (1 - minCMY);
+          computedY = (computedY - minCMY) / (1 - minCMY);
+          computedK = minCMY;
+
+          var cmyk = [computedC, computedM, computedY, computedK];
+          console.log("CMYK ", cmyk);
+          return cmyk;
+        };
+
         surface.registerRenderer("circle", {
           start: function start(obj, display, data) {},
           refresh: function refresh(obj, display, data) {
@@ -15154,7 +15200,7 @@
 
             var r = Math.min(obj.w() / 2, obj.h() / 2);
             doc.circle(r, r, r);
-            doc.fillColor(obj.get("bgcolor"), obj.get("alpha"));
+            doc.fillColor(rgb2cmyk(obj.get("bgcolor")), obj.get("alpha"));
             doc.fill();
             doc.restore();
           },
@@ -15174,7 +15220,7 @@
             doc.transform(mat.m00(), mat.m01(), mat.m10(), mat.m11(), mat.m30(), mat.m31());
 
             doc.rect(0, 0, obj.w(), obj.h());
-            doc.fillColor(obj.get("bgcolor"), obj.get("alpha"));
+            doc.fillColor(rgb2cmyk(obj.get("bgcolor")), obj.get("alpha"));
             doc.fill();
             doc.restore();
           },
@@ -15204,7 +15250,7 @@
             parser.fitPathInto(w, h);
 
             doc.path(parser.svgString());
-            doc.fillColor(obj.get("bgcolor"), obj.get("alpha"));
+            doc.fillColor(rgb2cmyk(obj.get("bgcolor")), obj.get("alpha"));
             doc.fill();
             doc.restore();
           },
