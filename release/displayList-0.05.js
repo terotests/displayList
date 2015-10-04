@@ -4918,7 +4918,7 @@
 
           data.viewG = main.g();
           data.viewObj = data.viewG.rect({
-            dataid: data.getID()
+            dataid: obj.getID()
           });
           data.childG = data.viewG.g();
           obj.draggableFor(data.viewObj, display);
