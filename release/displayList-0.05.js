@@ -4917,6 +4917,7 @@
           }
 
           data.viewG = main.g();
+          debugger;
           data.viewObj = data.viewG.rect({
             dataid: obj.getID()
           });
