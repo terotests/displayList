@@ -5984,7 +5984,10 @@
           }
 
           data.viewG = main.g();
-          data.viewObj = data.viewG.path();
+          data.viewObj = data.viewG.path({
+            "data-id": obj.model().getID()
+          });
+
           data.childG = data.viewG.g();
           obj.draggableFor(data.viewObj, display);
 
