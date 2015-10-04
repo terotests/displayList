@@ -12785,8 +12785,8 @@
             win = window,
             clientTop = docElem.clientTop || body.clientTop || 0,
             clientLeft = docElem.clientLeft || body.clientLeft || 0,
-            scrollTop = win.pageYOffset || jQuery.support.boxModel && docElem.scrollTop || body.scrollTop,
-            scrollLeft = win.pageXOffset || jQuery.support.boxModel && docElem.scrollLeft || body.scrollLeft,
+            scrollTop = win.pageYOffset,
+            scrollLeft = win.pageXOffset,
             top = box.top + scrollTop - clientTop,
             left = box.left + scrollLeft - clientLeft;
 
