@@ -4919,7 +4919,7 @@
           data.viewG = main.g();
           debugger;
           data.viewObj = data.viewG.rect({
-            dataid: obj.getID()
+            dataid: obj.model().getID()
           });
           data.childG = data.viewG.g();
           obj.draggableFor(data.viewObj, display);
