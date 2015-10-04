@@ -4917,9 +4917,8 @@
           }
 
           data.viewG = main.g();
-          debugger;
           data.viewObj = data.viewG.rect({
-            dataid: obj.model().getID()
+            "data-id": obj.model().getID()
           });
           data.childG = data.viewG.g();
           obj.draggableFor(data.viewObj, display);
@@ -5034,7 +5033,9 @@
           }
 
           data.viewG = main.g();
-          data.viewObj = data.viewG.circle();
+          data.viewObj = data.viewG.circle({
+            "data-id": obj.model().getID()
+          });
           data.childG = data.viewG.g();
           obj.draggableFor(data.viewObj, display);
 
@@ -5157,7 +5158,9 @@
           }
 
           data.viewG = main.g();
-          data.viewObj = data.viewG.svg_text();
+          data.viewObj = data.viewG.svg_text({
+            "data-id": obj.model().getID()
+          });
           data.childG = data.viewG.g();
           obj.draggableFor(data.viewObj, display);
 
@@ -5283,7 +5286,10 @@
           }
 
           data.viewG = main.g();
-          data.viewObj = data.viewG.path();
+          data.viewObj = data.viewG.path({
+            "data-id": obj.model().getID()
+          });
+
           data.childG = data.viewG.g();
           obj.draggableFor(data.viewObj, display);
 
@@ -5854,13 +5860,15 @@
           x : 0, y : 0, height : 200, width:200
           });
           */
+
           data.viewG = main.g();
           data.viewObj = data.viewG.image({
             "xlink:href": obj.url(),
             x: 0,
             y: 0,
             height: obj.w(),
-            width: obj.h()
+            width: obj.h(),
+            "data-id": obj.model().getID()
           });
           data.childG = data.viewG.g();
           obj.draggableFor(data.viewObj, display);
