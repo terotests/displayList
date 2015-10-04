@@ -15097,6 +15097,7 @@
           hoverSurface.svgHandles("circle");
           hoverSurface.svgHandles("text");
           hoverSurface.svgHandles("svgpath");
+          hoverSurface.svgHandles("path");
 
           if (options.handles) {
             if (options.handles) options.handles.forEach(function (h) {
