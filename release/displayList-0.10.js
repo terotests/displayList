@@ -10207,8 +10207,8 @@
 
         if (!cmd) {
           this._error = true;
-          console.error("No command found for");
-          console.error(str);
+          //console.error("No command found for");
+          //console.error(str);
         }
 
         this._activeCmd = cmd;
