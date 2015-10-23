@@ -5352,8 +5352,8 @@
         parser.makePathAbsolute();
         parser.fitPathInto( w, h );
         */
-
         // parser.drawPath( ctx, w, h);
+
         var pathStr = parser.svgString();
         if (!pathStr) {
           return;
@@ -12183,6 +12183,8 @@
           me.scale(me.scaleFactor());
           doR = true;
         }
+
+        this._batchItems(model.getID(), this);
       };
 
       /**
@@ -12215,6 +12217,8 @@
           }
         }
         if (tot_cnt == 0) return;
+
+        console.log("Batch cnt ", tot_cnt);
 
         var index = _renderables.renderIndex;
 
@@ -12444,8 +12448,6 @@
       _myTrait_.addToRenderList = function (obj) {
 
         if (obj.isFulfilled && !obj.isFulfilled()) return;
-
-        this._batchItems(obj._model.getID(), obj);
 
         if (_renderables) {
           var p = obj,
