@@ -12184,7 +12184,7 @@
           doR = true;
         }
 
-        this._batchItems(model.getID(), this);
+        this._setBatchItem(model.getID(), this);
       };
 
       /**
@@ -12463,7 +12463,7 @@
           if (_renderables.list.indexOf(p) < 0) {
             _renderables.list.push(p);
           }
-          this._batchItems(this._model.getID(), this);
+          this._setBatchItem(this._model.getID(), this);
         }
       };
 
