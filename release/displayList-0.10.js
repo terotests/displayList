@@ -12210,8 +12210,10 @@
 
         var tot_cnt = 0;
 
+        if (!_batchItems) return;
+
         for (var n in _batchItems) {
-          if (_batchItems.hasOwn(n)) {
+          if (_batchItems.hasOwnProperty(n)) {
             tot_cnt++;
             delete _batchItems[n];
           }
