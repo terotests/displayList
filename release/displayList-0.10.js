@@ -12463,6 +12463,7 @@
           if (_renderables.list.indexOf(p) < 0) {
             _renderables.list.push(p);
           }
+          this._batchItems(this._model.getID(), this);
         }
       };
 
